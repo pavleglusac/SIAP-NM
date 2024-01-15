@@ -152,7 +152,7 @@ def main(n_detections, start_date='2021-01-01'):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--start_date', help='Start date',
-                        type=str, default='2023-12-20')
+                        type=str, default='2023-01-13')
     parser.add_argument(
         "--detections", help="Number of detections to process", type=int, default=288*5)
     args = parser.parse_args()

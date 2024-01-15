@@ -8,10 +8,8 @@ import time
 from datetime import datetime, timedelta
 import pandas as pd
 
-
 s3 = boto3.client('s3')
 
-# TODO: dodaj uklanjanje ako imas i 12:51 i 12:50 da bude samo po jedan!
 
 def adjust_timestamp(timestamp, minutes, operation='add'):
     timestamp = timestamp.split('.')[0]
@@ -32,6 +30,7 @@ def clean_timestamp(timestamp):
     timestamp_dt = timestamp_dt.replace(second=0, microsecond=0)
     ts = timestamp_dt.strftime('%Y-%m-%dT%H:%M:%S')
     return ts
+
 
 def combine_data(detections_df, weather_df):
     setic = {clean_timestamp(row['Timestamp']): row for index, row in weather_df.iterrows()}
@@ -90,30 +89,23 @@ def transform_detections(detections):
     df.columns = ['Timestamp', 'Detections']
     return df
 
+
 def download_car_detections():
     paginator = s3.get_paginator('list_objects_v2')
     data = {}
-    total = 1
-    skip = 9
     for page in paginator.paginate(Bucket='siap-data', Prefix='detection'):
         leave = False
         for obj in page['Contents']:
-            if skip > 0:
-                skip -= 1
-                continue
             obj = s3.get_object(Bucket='siap-data', Key=obj['Key'])
             body = obj['Body'].read()
             if not body:
                 continue
             detections = json.loads(body)
             data.update(detections)
-            total -= 1
-            if total <= 0:
-                leave = True
-                break
         if leave:
             break
     return data
+
 
 def save_data(df):
     df.to_csv('./train.csv')
@@ -129,8 +121,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
