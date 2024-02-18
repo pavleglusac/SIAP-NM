@@ -108,7 +108,7 @@ def download_car_detections():
 
 
 def save_data(df):
-    df.to_csv('./train.csv')
+    df.to_csv('./train_belgrade.csv')
 
 
 def main():
