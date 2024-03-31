@@ -1,0 +1,5 @@
+Random Forest: 
+Prophet: 23
+SARIMA: 45
+SNAIVE: 70
+ETS: 73.14
