@@ -43,7 +43,7 @@ def get_df(path):
     df['Day'] = df['Timestamp'].dt.day
     df['Hour'] = df['Timestamp'].dt.hour
     df = df.drop(['Timestamp', 'WeatherMain_Snow', 'Year'], axis=1)
-    return df_to_X_y_vector(df, 10, 5)
+    return df_to_X_y_vector(df, 288, 288)
 
 
 def build_model_lstm(hp):
@@ -105,6 +105,7 @@ X, y = get_df(path)
 X = np.reshape(X, (X.shape[0], X.shape[1], X.shape[2]))
 X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.2, random_state=42)
 X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
+print(X_train.shape, y_train.shape)
 
 tuner = BayesianOptimization(
     build_model_gru,
@@ -116,6 +117,11 @@ tuner = BayesianOptimization(
 )
 tuner.search(X_train, y_train, epochs=15, validation_data=(X_val, y_val), batch_size=256)
 best_model = tuner.get_best_models()[0]
+best_hps = tuner.get_best_hyperparameters(num_trials=1)[0]
+
+for param in best_hps.values:
+    print(f"{param}: {best_hps.get(param)}")
+
 best_model.fit(X_train, y_train, epochs=15, batch_size=256)
 test_score = best_model.evaluate(X_test, y_test)
 print('test score je: ', test_score)
