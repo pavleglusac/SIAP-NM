@@ -3,6 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+models/DL/data
+
 .DS_Store
 
 *.pt
